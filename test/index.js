@@ -1,17 +1,13 @@
 const BIP39 = require('bip39')
-const EC = require('elliptic').ec
 const assert = require('assert')
 const networks = require('./networks.js')
 
 const bitcoinJS = require('bitcoinjs-lib')
 const zcashJS = require('bitcoinjs-lib-zcash')
-const explorers = require('bitcore-explorers')
 const request = require('request')
-const sha3 = require('js-sha3')
 
 const Web3 = require('web3')
 const BigNumber = require('bignumber.js')
-const ec = new EC('secp256k1')
 const ethUtil = require('ethereumjs-util')
 const EthereumTransaction = require('ethereumjs-tx')
 
@@ -645,7 +641,7 @@ describe('Balance Of', function () {
     const extendedPublicKey = bitcoinTestnetHdNode.derivePath('m/44\'/1\'/0\'').neutered().toBase58()
     const bitcointestnet = new BitcoinTestnetProtocol()
     bitcointestnet.getBalanceOfExtendedPublicKey(extendedPublicKey, 0, (error, value) => {
-      assert.equal(value, 97500000)
+      assert.equal(value, 97499999)
       done()
     })
   })
@@ -655,7 +651,7 @@ describe('Balance Of', function () {
     const publicKey = ethereumRopstenNode.derivePath('m/44\'/60\'/0\'/0/0').neutered().getPublicKeyBuffer()
     const ropstenEthereum = new EthereumRopstenProtocol()
     ropstenEthereum.getBalanceOfPublicKey(publicKey, (error, value) => {
-      assert.equal(value, '999915999999999960')
+      assert.equal(value, '998967812629237855')
       done()
     })
   })
@@ -665,7 +661,7 @@ describe('Balance Of', function () {
     const publicKey = ethereumRopstenNode.derivePath('m/44\'/60\'/0\'/0/0').neutered().getPublicKeyBuffer()
     const hopRopsten = new HOPTokenProtocol()
     hopRopsten.getBalanceOfPublicKey(publicKey, (error, value) => {
-      assert.equal(value, '12000000000000000000')
+      assert.equal(value, '11999999999999999980')
       done()
     })
   })
@@ -723,10 +719,11 @@ describe('Raw Transaction Prepare', function () {
       hopTokenProtocol.getTransactionDetails(transaction)
       hopTokenProtocol.signWithPrivateKey(privateKey, transaction, (err, rawTransaction) => {
         console.log(rawTransaction)
-        hopTokenProtocol.broadcastTransaction(rawTransaction, (err, hash) => {
+        /*hopTokenProtocol.broadcastTransaction(rawTransaction, (err, hash) => {
           console.log(err, hash)
           done()
-        })
+        })*/
+        done()
       })
     })
   })
