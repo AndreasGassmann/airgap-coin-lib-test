@@ -1,8 +1,8 @@
-bitcoin = {
-  networks:{}
+const bitcoin = {
+  networks: {}
 }
 
-function estimateFee(){}
+function estimateFee() { }
 
 bitcoin.networks.shadow = {
   messagePrefix: '\x19ShadowCash Signed Message:\n',
@@ -15,7 +15,7 @@ bitcoin.networks.shadow = {
   wif: 0xbf,
   dustThreshold: 0,
   feePerKb: 1000,
-  estimateFee: function() { return "unused in this app" },
+  estimateFee: function () { return "unused in this app" },
 };
 
 bitcoin.networks.shadowtn = {
@@ -29,7 +29,7 @@ bitcoin.networks.shadowtn = {
   wif: 0xff,
   dustThreshold: 0,
   feePerKb: 1000,
-  estimateFee: function() { return "unused in this app" },
+  estimateFee: function () { return "unused in this app" },
 };
 
 bitcoin.networks.clam = {
@@ -658,8 +658,8 @@ bitcoin.networks.pivx = {
     public: 0x022D2533,
     private: 0x0221312B
   },
-  pubKeyHash:30,
-  scriptHash:13,
+  pubKeyHash: 30,
+  scriptHash: 13,
   wif: 212
 }
 
@@ -670,10 +670,10 @@ bitcoin.networks.eth = {
     public: 0xffffffff,
     private: 0xffffffff
   },
-  scriptHash:13,
+  scriptHash: 13,
   pubKeyHash: 0xff,
   wif: 0xff,
-  ethereum : true
+  ethereum: true
 };
 
 bitcoin.networks.etc = {
@@ -683,7 +683,7 @@ bitcoin.networks.etc = {
   },
   pubKeyHash: 0xff,
   wif: 0xff,
-  ethereum : true
+  ethereum: true
 };
 
 
@@ -694,7 +694,7 @@ bitcoin.networks.clo = {
   },
   pubKeyHash: 0xff,
   wif: 0xff,
-  ethereum : true
+  ethereum: true
 };
 
 bitcoin.networks.abncoin = {
@@ -703,8 +703,8 @@ bitcoin.networks.abncoin = {
     public: 0x0488b21e,
     private: 0x0488ade4
   },
-  pubKeyHash:25,
-  scriptHash:85,
+  pubKeyHash: 25,
+  scriptHash: 85,
   wif: 153
 }
 
@@ -714,8 +714,8 @@ bitcoin.networks.asiacoin = {
     public: 0x0488b21e,
     private: 0x0488ade4
   },
-  pubKeyHash:23,
-  scriptHash:8,
+  pubKeyHash: 23,
+  scriptHash: 8,
   wif: 151
 }
 
@@ -725,8 +725,8 @@ bitcoin.networks.bitcoinplus = {
     public: 0x0488b21e,
     private: 0x0488ade4
   },
-  pubKeyHash:25,
-  scriptHash:85,
+  pubKeyHash: 25,
+  scriptHash: 85,
   wif: 153
 }
 
@@ -736,8 +736,8 @@ bitcoin.networks.canadaecoin = {
     public: 0x0488b21e,
     private: 0x0488ade4
   },
-  pubKeyHash:28,
-  scriptHash:5,
+  pubKeyHash: 28,
+  scriptHash: 5,
   wif: 156
 }
 
@@ -747,8 +747,8 @@ bitcoin.networks.einsteinium = {
     public: 0x0488b21e,
     private: 0x0488ade4
   },
-  pubKeyHash:33,
-  scriptHash:5,
+  pubKeyHash: 33,
+  scriptHash: 5,
   wif: 161
 }
 
@@ -759,7 +759,7 @@ bitcoin.networks.expanse = {
   },
   pubKeyHash: 0xff,
   wif: 0xff,
-  ethereum : true
+  ethereum: true
 };
 
 bitcoin.networks.iop = {
@@ -768,8 +768,8 @@ bitcoin.networks.iop = {
     public: 0x2780915f,
     private: 0xae3416f6
   },
-  pubKeyHash:117,
-  scriptHash:174,
+  pubKeyHash: 117,
+  scriptHash: 174,
   wif: 49
 }
 
@@ -780,8 +780,8 @@ bitcoin.networks.ixcoin = {
     public: 0x0488b21e,
     private: 0x0488ade4
   },
-  pubKeyHash:138,
-  scriptHash:5,
+  pubKeyHash: 138,
+  scriptHash: 5,
   wif: 128
 }
 
@@ -791,8 +791,8 @@ bitcoin.networks.landcoin = {
     public: 0x0488b21e,
     private: 0x0488ade4
   },
-  pubKeyHash:48,
-  scriptHash:122,
+  pubKeyHash: 48,
+  scriptHash: 122,
   wif: 176
 }
 
@@ -802,8 +802,8 @@ bitcoin.networks.namecoin = {
     public: 0x0488b21e,
     private: 0x0488ade4
   },
-  pubKeyHash:52,
-  scriptHash:13,
+  pubKeyHash: 52,
+  scriptHash: 13,
   wif: 180
 }
 
@@ -813,8 +813,8 @@ bitcoin.networks.navcoin = {
     public: 0x0488b21e,
     private: 0x0488ade4
   },
-  pubKeyHash:53,
-  scriptHash:85,
+  pubKeyHash: 53,
+  scriptHash: 85,
   wif: 150
 }
 
@@ -824,8 +824,8 @@ bitcoin.networks.okcash = {
     public: 0x03cc23d7,
     private: 0x03cc1c73
   },
-  pubKeyHash:55,
-  scriptHash:28,
+  pubKeyHash: 55,
+  scriptHash: 28,
   wif: 183
 }
 
@@ -835,8 +835,8 @@ bitcoin.networks.posw = {
     public: 0x0488b21e,
     private: 0x0488ade4
   },
-  pubKeyHash:55,
-  scriptHash:85,
+  pubKeyHash: 55,
+  scriptHash: 85,
   wif: 183
 }
 
@@ -846,8 +846,8 @@ bitcoin.networks.stratis = {
     public: 0x0488b21e,
     private: 0x0488b2dd
   },
-  pubKeyHash:63,
-  scriptHash:125,
+  pubKeyHash: 63,
+  scriptHash: 125,
   wif: 191
 }
 
@@ -857,8 +857,8 @@ bitcoin.networks.zcash = {
     public: 0x0488b21e,
     private: 0x0488ade4
   },
-  pubKeyHash:0x1cb8,
-  scriptHash:0x1cbd,
+  pubKeyHash: 0x1cb8,
+  scriptHash: 0x1cbd,
   wif: 128
 }
 
@@ -868,8 +868,8 @@ bitcoin.networks.lbry = {
     public: 0x019c354f,
     private: 0x019c3118
   },
-  pubKeyHash:85,
-  scriptHash:122,
+  pubKeyHash: 85,
+  scriptHash: 122,
   wif: 28
 }
 
@@ -879,8 +879,8 @@ bitcoin.networks.bela = {
     public: 0x0488b21e,
     private: 0x0488ade4
   },
-  pubKeyHash:25,
-  scriptHash:5,
+  pubKeyHash: 25,
+  scriptHash: 5,
   wif: 153
 }
 
@@ -890,8 +890,8 @@ bitcoin.networks.britcoin = {
     public: 0x0488b21e,
     private: 0x0488ade4
   },
-  pubKeyHash:25,
-  scriptHash:85,
+  pubKeyHash: 25,
+  scriptHash: 85,
   wif: 153
 }
 
@@ -901,8 +901,8 @@ bitcoin.networks.compcoin = {
     public: 0x0488b21e,
     private: 0x0488ade4
   },
-  pubKeyHash:28,
-  scriptHash:5,
+  pubKeyHash: 28,
+  scriptHash: 5,
   wif: 156
 }
 
@@ -912,8 +912,8 @@ bitcoin.networks.zcoin = {
     public: 0x0488b21e,
     private: 0x0488ade4
   },
-  pubKeyHash:82,
-  scriptHash:7,
+  pubKeyHash: 82,
+  scriptHash: 7,
   wif: 210
 }
 
@@ -923,8 +923,8 @@ bitcoin.networks.insane = {
     public: 0x0488b21e,
     private: 0x0488ade4
   },
-  pubKeyHash:102,
-  scriptHash:57,
+  pubKeyHash: 102,
+  scriptHash: 57,
   wif: 55
 }
 
@@ -934,8 +934,8 @@ bitcoin.networks.ultimatesecurecash = {
     public: 0xee80286a,
     private: 0xee8031e8
   },
-  pubKeyHash:68,
-  scriptHash:125,
+  pubKeyHash: 68,
+  scriptHash: 125,
   wif: 137
 }
 
@@ -945,8 +945,8 @@ bitcoin.networks.neurocoin = {
     public: 0x0488b21e,
     private: 0x0488ade4
   },
-  pubKeyHash:53,
-  scriptHash:117,
+  pubKeyHash: 53,
+  scriptHash: 117,
   wif: 181
 }
 
@@ -1078,7 +1078,7 @@ bitcoin.networks.mix = {
   },
   pubKeyHash: 0xff,
   wif: 0xff,
-  ethereum : true
+  ethereum: true
 }
 
 bitcoin.networks.voxels = {
@@ -1311,8 +1311,8 @@ bitcoin.networks.bitcoinz = {
     public: 0x0488b21e,
     private: 0x0488ade4
   },
-  pubKeyHash:0x1cb8,
-  scriptHash:0x1cbd,
+  pubKeyHash: 0x1cb8,
+  scriptHash: 0x1cbd,
   wif: 128
 }
 
@@ -1323,7 +1323,7 @@ bitcoin.networks.poa = {
   },
   pubKeyHash: 0xff,
   wif: 0xff,
-  ethereum : true
+  ethereum: true
 }
 
 bitcoin.networks.tether = {
@@ -1399,7 +1399,7 @@ bitcoin.networks.musicoin = {
   },
   pubKeyHash: 0xff,
   wif: 0xff,
-  ethereum : true
+  ethereum: true
 }
 
 bitcoin.networks.wincoin = {
@@ -1419,8 +1419,8 @@ bitcoin.networks.zclassic = {
     public: 0x0488b21e,
     private: 0x0488ade4
   },
-  pubKeyHash:0x1cb8,
-  scriptHash:0x1cbd,
+  pubKeyHash: 0x1cb8,
+  scriptHash: 0x1cbd,
   wif: 128
 }
 
@@ -1441,8 +1441,8 @@ bitcoin.networks.bitcoinprivate = {
     public: 0x0488b21e,
     private: 0x0488ade4
   },
-  pubKeyHash:0x1325,
-  scriptHash:0x13AF,
+  pubKeyHash: 0x1325,
+  scriptHash: 0x13AF,
   wif: 128
 }
 

@@ -14,64 +14,66 @@ const EthereumTransaction = require('ethereumjs-tx')
 const mnemonicPhrase = 'spell device they juice trial skirt amazing boat badge steak usage february virus art survey' // this is what the user writes down and what is saved by secure storage?
 const masterSeed = BIP39.mnemonicToSeed(mnemonicPhrase)
 
+const CoinLib = {};
+
 class CoinProtocol {
-  getAddressFromPublicKey (publicKey) { // broadcaster knows this (both broadcaster and signer)
+  getAddressFromPublicKey(publicKey) { // broadcaster knows this (both broadcaster and signer)
   }
 
-  getAddressFromExtendedPublicKey (extendedPublicKey, visibilityDerivationIndex, addressDerivationIndex) { // broadcaster knows this (both broadcaster and signer)
+  getAddressFromExtendedPublicKey(extendedPublicKey, visibilityDerivationIndex, addressDerivationIndex) { // broadcaster knows this (both broadcaster and signer)
   }
 
-  getAddressesFromExtendedPublicKey (extendedPublicKey, visibilityDerivationIndex, addressCount, offset) { // broadcaster knows this (both broadcaster and signer)
+  getAddressesFromExtendedPublicKey(extendedPublicKey, visibilityDerivationIndex, addressCount, offset) { // broadcaster knows this (both broadcaster and signer)
   }
 
-  signWithExtendedPrivateKey (extendedPrivateKey, transaction, callback) { // broadcaster proxies this operation
+  signWithExtendedPrivateKey(extendedPrivateKey, transaction, callback) { // broadcaster proxies this operation
   }
 
-  signWithPrivateKey (extendedPrivateKey, transaction, callback) { // broadcaster proxies this operation
+  signWithPrivateKey(extendedPrivateKey, transaction, callback) { // broadcaster proxies this operation
   }
 
-  getTransactionDetails (transaction) { // out of public information (both broadcaster and signer)
+  getTransactionDetails(transaction) { // out of public information (both broadcaster and signer)
   }
 
-  getBalanceOfPublicKey (publicKey, callback) {
+  getBalanceOfPublicKey(publicKey, callback) {
   }
 
-  getBalanceOfExtendedPublicKey (extendedPublicKey, offset = 0, callback) {
+  getBalanceOfExtendedPublicKey(extendedPublicKey, offset = 0, callback) {
   }
 
-  prepareTransactionFromExtendedPublicKey (extendedPublicKey, offset, recipients, values, fee, callback) { // only broadcaster
+  prepareTransactionFromExtendedPublicKey(extendedPublicKey, offset, recipients, values, fee, callback) { // only broadcaster
   }
 
-  prepareTransactionFromPublicKey (publicKey, recipients, values, fee, callback) { // only broadcaster
+  prepareTransactionFromPublicKey(publicKey, recipients, values, fee, callback) { // only broadcaster
   }
 
-  broadcastTransaction (rawTransaction, callback) {
+  broadcastTransaction(rawTransaction, callback) {
   }
 }
 
 class BitcoinProtocol extends CoinProtocol {
-  constructor (network = bitcoinJS.networks.bitcoin, baseApiUrl = 'https://insight.bitpay.com', bitcoinJSLib = bitcoinJS) {
+  constructor(network = bitcoinJS.networks.bitcoin, baseApiUrl = 'https://insight.bitpay.com', bitcoinJSLib = bitcoinJS) {
     super()
     this.network = network
     this.baseApiUrl = baseApiUrl
     this.bitcoinJSLib = bitcoinJSLib
   }
 
-  getAddressFromPublicKey (publicKey) { // broadcaster knows this (both broadcaster and signer)
+  getAddressFromPublicKey(publicKey) { // broadcaster knows this (both broadcaster and signer)
     return this.bitcoinJSLib.ECPair.fromPublicKeyBuffer(publicKey, this.network).getAddress()
   }
 
-  getAddressFromExtendedPublicKey (extendedPublicKey, visibilityDerivationIndex, addressDerivationIndex) { // broadcaster knows this (both broadcaster and signer)
+  getAddressFromExtendedPublicKey(extendedPublicKey, visibilityDerivationIndex, addressDerivationIndex) { // broadcaster knows this (both broadcaster and signer)
     return this.bitcoinJSLib.HDNode.fromBase58(extendedPublicKey, this.network).derive(visibilityDerivationIndex).derive(addressDerivationIndex).getAddress()
   }
 
-  getAddressesFromExtendedPublicKey (extendedPublicKey, visibilityDerivationIndex, addressCount, offset) { // broadcaster knows this (both broadcaster and signer)
+  getAddressesFromExtendedPublicKey(extendedPublicKey, visibilityDerivationIndex, addressCount, offset) { // broadcaster knows this (both broadcaster and signer)
     const node = this.bitcoinJSLib.HDNode.fromBase58(extendedPublicKey, this.network)
     const generatorArray = Array.from(new Array(addressCount), (x, i) => i + offset)
     return generatorArray.map(x => node.derive(visibilityDerivationIndex).derive(x).getAddress())
   }
 
-  signWithPrivateKey (privateKey, transaction, callback) { // broadcaster proxies this operation
+  signWithPrivateKey(privateKey, transaction, callback) { // broadcaster proxies this operation
     const transactionBuilder = new this.bitcoinJSLib.TransactionBuilder(this.network)
     for (let input of transaction.ins) {
       transactionBuilder.addInput(input.txId, input.vout)
@@ -87,7 +89,7 @@ class BitcoinProtocol extends CoinProtocol {
     callback(undefined, transactionBuilder.build().toHex())
   }
 
-  signWithExtendedPrivateKey (extendedPrivateKey, transaction, callback) { // broadcaster proxies this operation
+  signWithExtendedPrivateKey(extendedPrivateKey, transaction, callback) { // broadcaster proxies this operation
     const transactionBuilder = new this.bitcoinJSLib.TransactionBuilder(this.network)
     const node = this.bitcoinJSLib.HDNode.fromBase58(extendedPrivateKey, this.network)
 
@@ -105,7 +107,7 @@ class BitcoinProtocol extends CoinProtocol {
     callback(undefined, transactionBuilder.build().toHex())
   }
 
-  getTransactionDetails (transaction) { // out of public information (both broadcaster and signer)
+  getTransactionDetails(transaction) { // out of public information (both broadcaster and signer)
     console.log('---- New Transaction ----')
     let feeCalculator = 0
     for (let txIn of transaction.ins) {
@@ -120,7 +122,7 @@ class BitcoinProtocol extends CoinProtocol {
     console.log('Fee:\t\t\t' + feeCalculator)
   }
 
-  getBalanceOfPublicKey (publicKey, callback) {
+  getBalanceOfPublicKey(publicKey, callback) {
     const address = this.getAddressFromPublicKey(publicKey)
     request.get(this.baseApiUrl + '/api/addrs/' + address + '/utxo', (error, response, body) => {
       const utxos = JSON.parse(body)
@@ -136,7 +138,7 @@ class BitcoinProtocol extends CoinProtocol {
     })
   }
 
-  getBalanceOfExtendedPublicKey (extendedPublicKey, offset = 0, callback) {
+  getBalanceOfExtendedPublicKey(extendedPublicKey, offset = 0, callback) {
     const derivedAddresses = []
     const internalAddresses = this.getAddressesFromExtendedPublicKey(extendedPublicKey, 1, 20, offset)
     const externalAddresses = this.getAddressesFromExtendedPublicKey(extendedPublicKey, 0, 20, offset)
@@ -166,7 +168,7 @@ class BitcoinProtocol extends CoinProtocol {
     })
   }
 
-  prepareTransactionFromExtendedPublicKey (extendedPublicKey, offset, recipients, values, fee, callback) { // only broadcaster
+  prepareTransactionFromExtendedPublicKey(extendedPublicKey, offset, recipients, values, fee, callback) { // only broadcaster
     const transaction = {
       ins: [],
       outs: []
@@ -240,7 +242,7 @@ class BitcoinProtocol extends CoinProtocol {
     })
   }
 
-  prepareTransactionFromPublicKey (publicKey, recipients, values, fee, callback) { // only broadcaster
+  prepareTransactionFromPublicKey(publicKey, recipients, values, fee, callback) { // only broadcaster
     const transaction = {
       ins: [],
       outs: []
@@ -288,8 +290,8 @@ class BitcoinProtocol extends CoinProtocol {
     })
   }
 
-  broadcastTransaction (rawTransaction, callback) {
-    request.post(this.baseApiUrl + '/api/tx/send', {form: {rawtx: rawTransaction}}, (error, response, body) => {
+  broadcastTransaction(rawTransaction, callback) {
+    request.post(this.baseApiUrl + '/api/tx/send', { form: { rawtx: rawTransaction } }, (error, response, body) => {
       try {
         const payload = JSON.parse(body)
         if (error) {
@@ -305,56 +307,56 @@ class BitcoinProtocol extends CoinProtocol {
 }
 
 class BitcoinTestnetProtocol extends BitcoinProtocol {
-  constructor () {
+  constructor() {
     super(bitcoinJS.networks.testnet, 'https://test-insight.bitpay.com')
   }
 }
 
 class LitecoinProtocol extends BitcoinProtocol {
-  constructor () {
+  constructor() {
     super(bitcoinJS.networks.litecoin, 'https://insight.litecore.io')
   }
 }
 
 class ZCashProtocol extends BitcoinProtocol {
-  constructor () {
+  constructor() {
     super(networks.networks.zcash, 'https://explorer.zcashfr.io', zcashJS)
   }
 }
 
 class ZCashTestnetProtocol extends BitcoinProtocol {
-  constructor () {
+  constructor() {
     super(networks.networks.zcash, 'https://explorer.testnet.z.cash', zcashJS) // we probably need another network here, explorer is ok
   }
 }
 
 class EthereumProtocol extends CoinProtocol {
-  constructor (apiUrl = 'https://mainnet.infura.io/', chainId = 1) {
+  constructor(apiUrl = 'https://mainnet.infura.io/', chainId = 1) {
     super()
     this.web3 = new Web3(new Web3.providers.HttpProvider(apiUrl))
     this.network = bitcoinJS.networks.bitcoin
     this.chainId = chainId
   }
 
-  getAddressFromPublicKey (publicKeyBuffer) { // broadcaster knows this (both broadcaster and signer)
+  getAddressFromPublicKey(publicKeyBuffer) { // broadcaster knows this (both broadcaster and signer)
     return ethUtil.toChecksumAddress(ethUtil.publicToAddress(publicKeyBuffer, true).toString('hex'))
   }
 
-  getAddressFromExtendedPublicKey (extendedPublicKey, visibilityDerivationIndex, addressDerivationIndex) { // broadcaster knows this (both broadcaster and signer)
+  getAddressFromExtendedPublicKey(extendedPublicKey, visibilityDerivationIndex, addressDerivationIndex) { // broadcaster knows this (both broadcaster and signer)
     return this.getAddressFromPublicKey(bitcoinJS.HDNode.fromBase58(extendedPublicKey, this.network).derive(visibilityDerivationIndex).derive(addressDerivationIndex).getPublicKeyBuffer())
   }
 
-  getAddressesFromExtendedPublicKey (extendedPublicKey, visibilityDerivationIndex, addressCount, offset) { // broadcaster knows this (both broadcaster and signer)
+  getAddressesFromExtendedPublicKey(extendedPublicKey, visibilityDerivationIndex, addressCount, offset) { // broadcaster knows this (both broadcaster and signer)
     const node = bitcoinJS.HDNode.fromBase58(extendedPublicKey, this.network)
     const generatorArray = Array.from(new Array(addressCount), (x, i) => i + offset)
     return generatorArray.map(x => this.getAddressFromPublicKey(node.derive(visibilityDerivationIndex).derive(x).getPublicKeyBuffer()))
   }
 
-  signWithExtendedPrivateKey (extendedPrivateKey, transaction, callback) { // broadcaster proxies this operation
+  signWithExtendedPrivateKey(extendedPrivateKey, transaction, callback) { // broadcaster proxies this operation
     callback('extended private key signing for ether not implemented')
   }
 
-  signWithPrivateKey (privateKey, transaction, callback) { // broadcaster proxies this operation
+  signWithPrivateKey(privateKey, transaction, callback) { // broadcaster proxies this operation
     assert(transaction.from === ethUtil.toChecksumAddress(ethUtil.privateToAddress(privateKey).toString('hex')))
 
     const txParams = {
@@ -371,7 +373,7 @@ class EthereumProtocol extends CoinProtocol {
     callback(undefined, tx.serialize().toString('hex'))
   }
 
-  getTransactionDetails (transaction) { // out of public information (both broadcaster and signer)
+  getTransactionDetails(transaction) { // out of public information (both broadcaster and signer)
     console.log('---- New Transaction ----')
     console.log('Sender:\t\t\t' + transaction.from)
     console.log('Recipient:\t\t' + transaction.to)
@@ -379,20 +381,20 @@ class EthereumProtocol extends CoinProtocol {
     console.log('Fee:\t\t\t' + transaction.gasLimit * transaction.gasPrice)
   }
 
-  getBalanceOfPublicKey (publicKey, callback) {
+  getBalanceOfPublicKey(publicKey, callback) {
     const address = this.getAddressFromPublicKey(publicKey)
     this.web3.eth.getBalance(address, callback)
   }
 
-  getBalanceOfExtendedPublicKey (extendedPublicKey, offset = 0, callback) {
+  getBalanceOfExtendedPublicKey(extendedPublicKey, offset = 0, callback) {
     callback('extended public balance for ether not implemented')
   }
 
-  prepareTransactionFromExtendedPublicKey (extendedPublicKey, offset, recipients, values, fee, callback) { // only broadcaster
+  prepareTransactionFromExtendedPublicKey(extendedPublicKey, offset, recipients, values, fee, callback) { // only broadcaster
     callback('extended public tx for ether not implemented')
   }
 
-  prepareTransactionFromPublicKey (publicKey, recipients, values, fee, callback) { // only broadcaster
+  prepareTransactionFromPublicKey(publicKey, recipients, values, fee, callback) { // only broadcaster
     assert(recipients.length === values.length)
     assert(recipients.length === 1)
 
@@ -420,7 +422,7 @@ class EthereumProtocol extends CoinProtocol {
     })
   }
 
-  broadcastTransaction (rawTransaction, callback) {
+  broadcastTransaction(rawTransaction, callback) {
     this.web3.eth.sendSignedTransaction('0x' + rawTransaction, (err, receipt) => {
       if (err) {
         callback(err)
@@ -432,13 +434,13 @@ class EthereumProtocol extends CoinProtocol {
 }
 
 class EthereumRopstenProtocol extends EthereumProtocol {
-  constructor () {
+  constructor() {
     super('https://ropsten.infura.io/', 3) // we probably need another network here, explorer is ok
   }
 }
 
 class EthereumClassicProtocol extends EthereumProtocol {
-  constructor () {
+  constructor() {
     super('https://mew.epool.io/', 61) // we probably need another network here, explorer is ok
   }
 }
@@ -488,17 +490,17 @@ const AUTH_TOKEN_ABI = [
 
 class GenericERC20 extends EthereumProtocol {
 
-  constructor (apiUrl = 'https://mainnet.infura.io/', chainId = 1, contractAddress) {
+  constructor(apiUrl = 'https://mainnet.infura.io/', chainId = 1, contractAddress) {
     super(apiUrl, chainId) // we probably need another network here, explorer is ok
     this.tokenContract = new this.web3.eth.Contract(AUTH_TOKEN_ABI, contractAddress)
   }
 
-  getBalanceOfPublicKey (publicKey, callback) {
+  getBalanceOfPublicKey(publicKey, callback) {
     const address = this.getAddressFromPublicKey(publicKey)
     this.tokenContract.methods.balanceOf(address).call(callback)
   }
 
-  signWithPrivateKey (privateKey, transaction, callback) { // broadcaster proxies this operation
+  signWithPrivateKey(privateKey, transaction, callback) { // broadcaster proxies this operation
     assert(transaction.from === ethUtil.toChecksumAddress(ethUtil.privateToAddress(privateKey).toString('hex')))
 
     const txParams = {
@@ -515,14 +517,14 @@ class GenericERC20 extends EthereumProtocol {
     callback(undefined, tx.serialize().toString('hex'))
   }
 
-  prepareTransactionFromPublicKey (publicKey, recipients, values, fee, callback) { // only broadcaster
+  prepareTransactionFromPublicKey(publicKey, recipients, values, fee, callback) { // only broadcaster
     assert(recipients.length === values.length)
     assert(recipients.length === 1)
     this.getBalanceOfPublicKey(publicKey, (error, balance) => {
       if (balance >= values[0]) {
         super.getBalanceOfPublicKey(publicKey, (error, ethBalance) => {
           const address = this.getAddressFromPublicKey(publicKey)
-          this.tokenContract.methods.transfer(recipients[0], values[0]).estimateGas({from: address}, (error, gasAmount) => {
+          this.tokenContract.methods.transfer(recipients[0], values[0]).estimateGas({ from: address }, (error, gasAmount) => {
             const gasLimit = gasAmount + 21000 // unsure about this calculation
             if (ethBalance >= fee) {
               this.web3.eth.getTransactionCount(address).then(txCount => {
@@ -550,181 +552,20 @@ class GenericERC20 extends EthereumProtocol {
 }
 
 class HOPTokenProtocol extends GenericERC20 {
-  constructor () {
+  constructor() {
     super('https://ropsten.infura.io/', 3, '0x2dd847af80418D280B7078888B6A6133083001C9') // we probably need another network here, explorer is ok
   }
 }
 
-describe('Extended Public Derivation Logic', function () {
-  it('should return the correct bitcoin address from extended public key', function () {
-    const bitcoinHdNode = bitcoinJS.HDNode.fromSeedBuffer(masterSeed, bitcoinJS.networks.bitcoin)
-    const extendedPublicKey = bitcoinHdNode.derivePath('m/44\'/0\'/0\'').neutered().toBase58()
-    // if you call "neutered" it will make sure only the extended public is being used
-    // the actual derivation path of the first address is "m/44'/0'/0'/0/0" (it's not hardened (') because hardened keys cannot be derived from public information)
-    const bitcoin = new BitcoinProtocol()
-    assert.equal(bitcoin.getAddressFromExtendedPublicKey(extendedPublicKey, 0, 0), '15B2gX2x1eqFKgR44nCe1i33ursGKP4Qpi')
-    // m/44'/0'/0'/0/0
-    assert.equal(bitcoin.getAddressFromExtendedPublicKey(extendedPublicKey, 0, 1), '15srTWTrucPWSUGFZY2LWaYobwpDLknz49')
-  })
-  it('should return the correct litecoin address from extended public key', function () {
-    const litecoinHdNode = bitcoinJS.HDNode.fromSeedBuffer(masterSeed, bitcoinJS.networks.litecoin)
-    const extendedPublicKey = litecoinHdNode.derivePath('m/44\'/2\'/0\'').neutered().toBase58()
-    const litecoin = new LitecoinProtocol()
-    // m/44'/2'/0'/0/0
-    assert.equal(litecoin.getAddressFromExtendedPublicKey(extendedPublicKey, 0, 0), 'LaKxMHETSaWsigMYs88J6ibEGZnLRNWWH1')
-    // m/44'/2'/0'/0/1
-    assert.equal(litecoin.getAddressFromExtendedPublicKey(extendedPublicKey, 0, 1), 'LQUaS2G2FGB2fnoNmon6ERv94JAk6GR29R')
-  })
-  it('should return the correct bitcointestnet address from extended public key', function () {
-    const bitcoinTestnetHdNode = bitcoinJS.HDNode.fromSeedBuffer(masterSeed, bitcoinJS.networks.testnet)
-    const extendedPublicKey = bitcoinTestnetHdNode.derivePath('m/44\'/1\'/0\'').neutered().toBase58()
-    const bitcointestnet = new BitcoinTestnetProtocol()
-    // m/44'/1'/0'/0/0
-    assert.equal(bitcointestnet.getAddressFromExtendedPublicKey(extendedPublicKey, 0, 0), 'mi1ypWeso8oAxBxYZ8e2grCNBhW1hrbK8k')
-    // m/44'/1'/0'/0/1
-    assert.equal(bitcointestnet.getAddressFromExtendedPublicKey(extendedPublicKey, 0, 1), 'moK2Ws7YvK3LRppzCuLRVfDkpvZiw7T4cu')
-  })
-  it('should return the correct zcash address from extended public key', function () {
-    const zcashHdNode = zcashJS.HDNode.fromSeedBuffer(masterSeed, networks.networks.zcash)
-    const extendedPublicKey = zcashHdNode.derivePath('m/44\'/133\'/0\'').neutered().toBase58()
-    const zcash = new ZCashProtocol()
-    // m/44'/133'/0'/0/0
-    assert.equal(zcash.getAddressFromExtendedPublicKey(extendedPublicKey, 0, 0), 't1PFyZ43MRrVRBWTKqTT5wfimtZ9MFSTgPC')
-    // m/44'/133'/0'/0/1
-    assert.equal(zcash.getAddressFromExtendedPublicKey(extendedPublicKey, 0, 1), 't1XwXnCQopt16zfAJVb76A7JPerKE9LSg9L')
-  })
-  it('should return the correct ethereum address from extended public key', function () {
-    const bitcoinHdNode = bitcoinJS.HDNode.fromSeedBuffer(masterSeed, bitcoinJS.networks.bitcoin)
-    const publicKey = bitcoinHdNode.derivePath('m/44\'/60\'/0\'').neutered().toBase58()
-    const eth = new EthereumProtocol()
-    assert.equal(eth.getAddressFromExtendedPublicKey(publicKey, 0, 0), '0x4A1E1D37462a422873BFCCb1e705B05CC4bd922e')
-  })
-})
+CoinLib.BitcoinProtocol = BitcoinProtocol;
+CoinLib.BitcoinTestnetProtocol = BitcoinTestnetProtocol;
+CoinLib.LitecoinProtocol = LitecoinProtocol
+CoinLib.ZCashProtocol = ZCashProtocol
+CoinLib.ZCashTestnetProtocol = ZCashTestnetProtocol
+CoinLib.EthereumProtocol = EthereumProtocol
+CoinLib.EthereumRopstenProtocol = EthereumRopstenProtocol
+CoinLib.EthereumClassicProtocol = EthereumClassicProtocol
+CoinLib.GenericERC20 = GenericERC20
+CoinLib.HOPTokenProtocol = HOPTokenProtocol
 
-describe('Public Derivation Logic', function () {
-  it('should return the correct bitcoin address from public key', function () {
-    const bitcoinHdNode = bitcoinJS.HDNode.fromSeedBuffer(masterSeed, bitcoinJS.networks.bitcoin)
-    const publicKey = bitcoinHdNode.derivePath('m/44\'/0\'/0\'/0/0').neutered().getPublicKeyBuffer()
-    const bitcoin = new BitcoinProtocol()
-    assert.equal(bitcoin.getAddressFromPublicKey(publicKey), '15B2gX2x1eqFKgR44nCe1i33ursGKP4Qpi')
-  })
-  it('should return the correct litecoin address from public key', function () {
-    const litecoinHdNode = bitcoinJS.HDNode.fromSeedBuffer(masterSeed, bitcoinJS.networks.litecoin)
-    const publicKey = litecoinHdNode.derivePath('m/44\'/2\'/0\'/0/0').neutered().getPublicKeyBuffer()
-    const litecoin = new LitecoinProtocol()
-    assert.equal(litecoin.getAddressFromPublicKey(publicKey), 'LaKxMHETSaWsigMYs88J6ibEGZnLRNWWH1')
-  })
-  it('should return the correct bitcointestnet address from extended public key', function () {
-    const bitcoinTestnetHdNode = bitcoinJS.HDNode.fromSeedBuffer(masterSeed, bitcoinJS.networks.testnet)
-    const publicKey = bitcoinTestnetHdNode.derivePath('m/44\'/1\'/0\'/0/0').neutered().getPublicKeyBuffer()
-    const bitcointestnet = new BitcoinTestnetProtocol()
-    assert.equal(bitcointestnet.getAddressFromPublicKey(publicKey), 'mi1ypWeso8oAxBxYZ8e2grCNBhW1hrbK8k')
-  })
-  it('should return the correct zcash address from extended public key', function () {
-    const zcashHdNode = zcashJS.HDNode.fromSeedBuffer(masterSeed, networks.networks.zcash)
-    const publicKey = zcashHdNode.derivePath('m/44\'/133\'/0\'/0/0').neutered().getPublicKeyBuffer()
-    const zcash = new ZCashProtocol()
-    assert.equal(zcash.getAddressFromPublicKey(publicKey), 't1PFyZ43MRrVRBWTKqTT5wfimtZ9MFSTgPC')
-  })
-  it('should return the correct ethereum address from extended public key', function () {
-    const bitcoinHdNode = bitcoinJS.HDNode.fromSeedBuffer(masterSeed, networks.networks.eth)
-    const publicKey = bitcoinHdNode.derivePath('m/44\'/60\'/0\'/0/0').neutered().getPublicKeyBuffer()
-    const eth = new EthereumProtocol()
-    assert.equal(eth.getAddressFromPublicKey(publicKey), '0x4A1E1D37462a422873BFCCb1e705B05CC4bd922e')
-  })
-})
-
-describe('Balance Of', function () {
-  it('should return the correct bitcointestnet balance', function (done) {
-    const bitcoinTestnetHdNode = bitcoinJS.HDNode.fromSeedBuffer(masterSeed, bitcoinJS.networks.testnet)
-    const extendedPrivateKey = bitcoinTestnetHdNode.derivePath('m/44\'/1\'/0\'').toBase58()
-    const extendedPublicKey = bitcoinTestnetHdNode.derivePath('m/44\'/1\'/0\'').neutered().toBase58()
-    const bitcointestnet = new BitcoinTestnetProtocol()
-    bitcointestnet.getBalanceOfExtendedPublicKey(extendedPublicKey, 0, (error, value) => {
-      assert.equal(value, 97499999)
-      done()
-    })
-  })
-
-  it('should return the correct ethereum ropsten balance', function (done) {
-    const ethereumRopstenNode = bitcoinJS.HDNode.fromSeedBuffer(masterSeed, networks.networks.eth)
-    const publicKey = ethereumRopstenNode.derivePath('m/44\'/60\'/0\'/0/0').neutered().getPublicKeyBuffer()
-    const ropstenEthereum = new EthereumRopstenProtocol()
-    ropstenEthereum.getBalanceOfPublicKey(publicKey, (error, value) => {
-      assert.equal(value, '998967812629237855')
-      done()
-    })
-  })
-
-  it('should return the correct hop ropsten balance', function (done) {
-    const ethereumRopstenNode = bitcoinJS.HDNode.fromSeedBuffer(masterSeed, networks.networks.eth)
-    const publicKey = ethereumRopstenNode.derivePath('m/44\'/60\'/0\'/0/0').neutered().getPublicKeyBuffer()
-    const hopRopsten = new HOPTokenProtocol()
-    hopRopsten.getBalanceOfPublicKey(publicKey, (error, value) => {
-      assert.equal(value, '11999999999999999980')
-      done()
-    })
-  })
-})
-
-describe('Raw Transaction Prepare', function () {
-  it('should return a correct bitcointestnet transaction', function (done) {
-    const bitcoinTestnetHdNode = bitcoinJS.HDNode.fromSeedBuffer(masterSeed, bitcoinJS.networks.testnet)
-    const extendedPrivateKey = bitcoinTestnetHdNode.derivePath('m/44\'/1\'/0\'').toBase58()
-    const extendedPublicKey = bitcoinTestnetHdNode.derivePath('m/44\'/1\'/0\'').neutered().toBase58()
-    const bitcointestnet = new BitcoinTestnetProtocol()
-    bitcointestnet.prepareTransactionFromExtendedPublicKey(extendedPublicKey, 0, ['mi1ypWeso8oAxBxYZ8e2grCNBhW1hrbK8k'], [10], 1, function (error, transaction) {
-      //let txb = bitcoinJS.TransactionBuilder.fromTransaction(transaction, bitcoinJS.networks.testnet)
-      //txb.sign(bitcoinTestnetHdNode.derivePath('m/44\'/1\'/0\''), 0)
-      bitcointestnet.getTransactionDetails(transaction)
-      bitcointestnet.signWithExtendedPrivateKey(extendedPrivateKey, transaction, (err, rawTransaction) => {
-        console.log(rawTransaction)
-        /*bitcointestnet.broadcastTransaction(rawTransaction, (err, hash) => {
-          console.log(err, hash)
-          done()
-        })*/
-        done()
-      })
-    })
-  })
-
-  it('should return a correct ethereum ropsten transaction', function (done) {
-    const ethereumRopstenNode = bitcoinJS.HDNode.fromSeedBuffer(masterSeed, networks.networks.eth)
-    const publicKey = ethereumRopstenNode.derivePath('m/44\'/60\'/0\'/0/0').neutered().getPublicKeyBuffer()
-    const privateKey = ethereumRopstenNode.derivePath('m/44\'/60\'/0\'/0/0').keyPair.d.toBuffer(32)
-    const ethereumRopstenProtocol = new EthereumRopstenProtocol()
-    ethereumRopstenProtocol.prepareTransactionFromPublicKey(publicKey, ['0x41d9c9996Ca6De4B759deC24B09EF638c94166e8'], [10], 21000 * 10 ** 9, function (error, transaction) {
-      //let txb = bitcoinJS.TransactionBuilder.fromTransaction(transaction, bitcoinJS.networks.testnet)
-      //txb.sign(bitcoinTestnetHdNode.derivePath('m/44\'/1\'/0\''), 0)
-      ethereumRopstenProtocol.getTransactionDetails(transaction)
-      ethereumRopstenProtocol.signWithPrivateKey(privateKey, transaction, (err, rawTransaction) => {
-        console.log(rawTransaction)
-        /*ethereumRopstenProtocol.broadcastTransaction(rawTransaction, (err, hash) => {
-          console.log(err, hash)
-          done()
-        })*/
-        done()
-      })
-    })
-  })
-
-  it('should return a correct hop ropsten transaction', function (done) {
-    const ethereumRopstenNode = bitcoinJS.HDNode.fromSeedBuffer(masterSeed, networks.networks.eth)
-    const publicKey = ethereumRopstenNode.derivePath('m/44\'/60\'/0\'/0/0').neutered().getPublicKeyBuffer()
-    const privateKey = ethereumRopstenNode.derivePath('m/44\'/60\'/0\'/0/0').keyPair.d.toBuffer(32)
-    const hopTokenProtocol = new HOPTokenProtocol()
-    hopTokenProtocol.prepareTransactionFromPublicKey(publicKey, ['0x41d9c9996Ca6De4B759deC24B09EF638c94166e8'], [10], 21000 * 10 ** 9, function (error, transaction) {
-      //let txb = bitcoinJS.TransactionBuilder.fromTransaction(transaction, bitcoinJS.networks.testnet)
-      //txb.sign(bitcoinTestnetHdNode.derivePath('m/44\'/1\'/0\''), 0)
-      hopTokenProtocol.getTransactionDetails(transaction)
-      hopTokenProtocol.signWithPrivateKey(privateKey, transaction, (err, rawTransaction) => {
-        console.log(rawTransaction)
-        /*hopTokenProtocol.broadcastTransaction(rawTransaction, (err, hash) => {
-          console.log(err, hash)
-          done()
-        })*/
-        done()
-      })
-    })
-  })
-})
+module.exports = CoinLib;
